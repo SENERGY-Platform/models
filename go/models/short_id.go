@@ -32,3 +32,12 @@ func ShortenId(longId string) (string, error) {
 	}
 	return base64.RawURLEncoding.EncodeToString(bytes), nil
 }
+
+func LongId(shortId string) (string, error) {
+	bytes, err := base64.RawURLEncoding.DecodeString(shortId)
+	if err != nil {
+		return "", err
+	}
+	mediumId := hex.EncodeToString(bytes)
+	return mediumId[:8] + "-" + mediumId[8:12] + "-" + mediumId[12:16] + "-" + mediumId[16:20] + "-" + mediumId[20:], nil
+}
