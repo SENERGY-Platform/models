@@ -34,3 +34,21 @@ type HubEdit struct {
 	Hash           string   `json:"hash"`
 	DeviceLocalIds []string `json:"device_local_ids"`
 }
+
+func (this *Hub) ToHubEdit() HubEdit {
+	return HubEdit{
+		Id:             this.Id,
+		Name:           this.Name,
+		Hash:           this.Hash,
+		DeviceLocalIds: this.DeviceLocalIds,
+	}
+}
+
+func (this *HubEdit) ToHub() Hub {
+	return Hub{
+		Id:             this.Id,
+		Name:           this.Name,
+		Hash:           this.Hash,
+		DeviceLocalIds: this.DeviceLocalIds,
+	}
+}
