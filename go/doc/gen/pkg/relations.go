@@ -25,12 +25,13 @@ func SetRelations(structs []Struct, enums []Enum) (result []Struct) {
 }
 
 func SetCompositions(structs []Struct, enums []Enum) (result []Struct) {
-	known := map[string]bool{}
+	knownStructs := map[string]bool{}
 	for _, s := range structs {
-		known[s.Name] = true
+		knownStructs[s.Name] = true
 	}
+	knownEnums := map[string]bool{}
 	for _, e := range enums {
-		known[e.Name] = true
+		knownEnums[e.Name] = true
 	}
 	indexFieldTypeToStruct := map[string][]string{}
 	for _, s := range structs {
@@ -40,8 +41,11 @@ func SetCompositions(structs []Struct, enums []Enum) (result []Struct) {
 	}
 	for _, s := range structs {
 		for _, f := range s.Fields {
-			if known[f.ElementType] {
+			if knownStructs[f.ElementType] {
 				s.Compositions = append(s.Compositions, getCompositeRel(f, indexFieldTypeToStruct))
+			}
+			if knownEnums[f.ElementType] {
+				s.Compositions = append(s.Compositions, getEnumRel(f))
 			}
 		}
 		s.Compositions = mergeDirectedRelations(s.Compositions)
@@ -52,14 +56,18 @@ func SetCompositions(structs []Struct, enums []Enum) (result []Struct) {
 
 func getCompositeRel(f Field, indexFieldTypeToStruct map[string][]string) (result Rel) {
 	result.StructName = f.ElementType
-	result.TargetCardinality = MaxOne
-	if f.Many {
-		result.TargetCardinality = Many
-	}
+	result.TargetCardinality = f.Card
 	result.SourceCardinality = ExactOne
 	if len(indexFieldTypeToStruct[f.ElementType]) > 1 {
 		result.SourceCardinality = MaxOne
 	}
+	return result
+}
+
+func getEnumRel(f Field) (result Rel) {
+	result.StructName = f.ElementType
+	result.TargetCardinality = f.Card
+	result.SourceCardinality = Many
 	return result
 }
 
@@ -74,7 +82,7 @@ func mergeDirectedRelations(composition []Rel) (result []Rel) {
 			element.StructName = r.StructName
 			element.SourceCardinality = r.SourceCardinality //source cardinality should be the same for every element
 
-			//we have only 2 possible states: Many and MaxOne
+			//we have only 2 possible states: Card and MaxOne
 			//and many overwrites MaxOne
 			if element.TargetCardinality == "" {
 				element.TargetCardinality = r.TargetCardinality
@@ -102,9 +110,10 @@ func SetInferredRelations(structs []Struct) (result []Struct) {
 				if len(list) > 1 {
 					fmt.Printf("WARNING: ambiguous inferred relation for %v, %v => %#v", s.Name, f.Name, list)
 				}
-				card := MaxOne
-				if f.Many {
-					card = Many
+				card := f.Card
+				if card == ExactOne {
+					//inferred relations (strings) may be empty
+					card = MaxOne
 				}
 				s.InferredRelations = append(s.InferredRelations, Rel{
 					StructName:        list[0].Name,

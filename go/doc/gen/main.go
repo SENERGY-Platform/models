@@ -17,8 +17,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/SENERGY-Platform/models/go/doc/gen/pkg"
+	"log"
 	"os"
 )
 
@@ -26,11 +26,24 @@ import (
 
 func main() {
 	if len(os.Args) < 3 {
-		fmt.Println("missing input/output locations")
+		log.Fatal("missing input/output locations")
 	}
 
 	source := os.Args[1]
 	output := os.Args[2]
 
-	pkg.Gen(source, output)
+	result := pkg.Gen(source)
+
+	file, err := os.OpenFile(output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = file.Write([]byte(result))
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

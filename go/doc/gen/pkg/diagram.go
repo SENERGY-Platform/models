@@ -18,6 +18,7 @@ package pkg
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -28,10 +29,13 @@ func Generate(structs []Struct, enums []Enum) (result string) {
 	enumsUml := EnumsUml(enums)
 	structUml := StructsUml(structs)
 
-	return header + strings.Join(enumsUml, "\n\n") + "\n\n" + strings.Join(structUml, "\n") + footer
+	return header + strings.Join(structUml, "\n") + "\n\n" + strings.Join(enumsUml, "\n") + footer
 }
 
 func EnumsUml(enums []Enum) (result []string) {
+	sort.Slice(enums, func(i, j int) bool {
+		return enums[i].Name < enums[j].Name
+	})
 	for _, e := range enums {
 		result = append(result, EnumUml(e))
 	}
@@ -45,6 +49,10 @@ func EnumUml(enum Enum) string {
 }
 
 func StructsUml(structs []Struct) (result []string) {
+	sort.Slice(structs, func(i, j int) bool {
+		return structs[i].Name < structs[j].Name
+		//return len(structs[i].Compositions)+len(structs[i].InferredRelations) > len(structs[j].Compositions)+len(structs[j].InferredRelations)
+	})
 	for _, s := range structs {
 		result = append(result, StructUml(s))
 	}
@@ -66,6 +74,9 @@ class %v {
 }
 
 func CompositionsUml(source string, compositions []Rel) (result []string) {
+	sort.Slice(compositions, func(i, j int) bool {
+		return compositions[i].StructName < compositions[j].StructName
+	})
 	for _, c := range compositions {
 		result = append(result, CompositionUml(source, c))
 	}
@@ -77,6 +88,9 @@ func CompositionUml(source string, rel Rel) string {
 }
 
 func InferredRelationsUml(source string, relations []Rel) (result []string) {
+	sort.Slice(relations, func(i, j int) bool {
+		return relations[i].StructName < relations[j].StructName
+	})
 	for _, rel := range relations {
 		result = append(result, InferredRelationUml(source, rel))
 	}

@@ -47,5 +47,5 @@ type Field struct {
 	Name        string
 	Type        string
 	ElementType string //if type is an array or map
-	Many        bool
+	Card        Cardinality
 }

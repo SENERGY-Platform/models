@@ -1,26 +1,109 @@
 @startuml
 !pragma layout elk
 
-enum Interaction {
-		"event"
-"request"
-"event+request"
-	}
 
-enum Serialization {
-		"xml"
-"json"
-"plain-text"
-	}
+class Aspect {
+Id string
+Name string
+SubAspects []Aspect
+}
+Aspect "1" o- "0..*" Aspect
 
-enum Type {
-		"https://schema.org/Text"
-"https://schema.org/Integer"
-"https://schema.org/Float"
-"https://schema.org/Boolean"
-"https://schema.org/ItemList"
-"https://schema.org/StructuredValue"
-	}
+
+class AspectNode {
+Id string
+Name string
+RootId string
+ParentId string
+ChildIds []string
+AncestorIds []string
+DescendentIds []string
+}
+
+
+
+class Attribute {
+Key string
+Value string
+Origin string
+}
+
+
+
+class Characteristic {
+Id string
+Name string
+DisplayUnit string
+Type Type
+MinValue any
+MaxValue any
+AllowedValues []any
+Value any
+SubCharacteristics []Characteristic
+}
+Characteristic "0..1" o- "0..*" Characteristic
+Characteristic "0..*" o- "1" Type
+
+
+class Concept {
+Id string
+Name string
+CharacteristicIds []string
+BaseCharacteristicId string
+Conversions []ConverterExtension
+}
+Concept "0..1" o- "0..*" ConverterExtension
+Concept "0..*" - "0..*" Characteristic
+
+class ConceptWithCharacteristics {
+Id string
+Name string
+BaseCharacteristicId string
+Characteristics []Characteristic
+Conversions []ConverterExtension
+}
+ConceptWithCharacteristics "0..1" o- "0..*" Characteristic
+ConceptWithCharacteristics "0..1" o- "0..*" ConverterExtension
+
+
+class Content {
+Id string
+ContentVariable ContentVariable
+Serialization Serialization
+ProtocolSegmentId string
+}
+Content "0..1" o- "1" ContentVariable
+Content "0..*" o- "1" Serialization
+Content "0..*" - "0..1" ProtocolSegment
+
+class ContentVariable {
+Id string
+Name string
+IsVoid bool
+OmitEmpty bool
+Type Type
+SubContentVariables []ContentVariable
+CharacteristicId string
+Value any
+SerializationOptions []string
+UnitReference string
+FunctionId string
+AspectId string
+}
+ContentVariable "0..1" o- "0..*" ContentVariable
+ContentVariable "0..*" o- "1" Type
+ContentVariable "0..*" - "0..1" Aspect
+ContentVariable "0..*" - "0..1" Characteristic
+ContentVariable "0..*" - "0..1" Function
+
+class ConverterExtension {
+From string
+To string
+Distance int64
+Formula string
+PlaceholderName string
+}
+
 
 
 class Device {
@@ -32,6 +115,82 @@ DeviceTypeId string
 }
 Device "0..1" o- "0..*" Attribute
 Device "0..*" - "0..1" DeviceType
+
+class DeviceClass {
+Id string
+Image string
+Name string
+}
+
+
+
+class DeviceGroup {
+Id string
+Name string
+Image string
+Criteria []DeviceGroupFilterCriteria
+DeviceIds []string
+CriteriaShort []string
+Attributes []Attribute
+}
+DeviceGroup "0..1" o- "0..*" Attribute
+DeviceGroup "1" o- "0..*" DeviceGroupFilterCriteria
+DeviceGroup "0..*" - "0..*" Device
+
+class DeviceGroupFilterCriteria {
+Interaction Interaction
+FunctionId string
+AspectId string
+DeviceClassId string
+}
+DeviceGroupFilterCriteria "0..*" o- "1" Interaction
+DeviceGroupFilterCriteria "0..*" - "0..1" Aspect
+DeviceGroupFilterCriteria "0..*" - "0..1" DeviceClass
+DeviceGroupFilterCriteria "0..*" - "0..1" Function
+
+class DeviceType {
+Id string
+Name string
+Description string
+ServiceGroups []ServiceGroup
+Services []Service
+DeviceClassId string
+Attributes []Attribute
+}
+DeviceType "0..1" o- "0..*" Attribute
+DeviceType "1" o- "0..*" Service
+DeviceType "1" o- "0..*" ServiceGroup
+DeviceType "0..*" - "0..1" DeviceClass
+
+class Function {
+Id string
+Name string
+DisplayName string
+Description string
+ConceptId string
+RdfType string
+}
+
+Function "0..*" - "0..1" Concept
+
+class Hub {
+Id string
+Name string
+Hash string
+DeviceLocalIds []string
+DeviceIds []string
+}
+
+Hub "0..*" - "0..*" Device
+
+class HubEdit {
+Id string
+Name string
+Hash string
+DeviceLocalIds []string
+}
+
+HubEdit "0..*" - "0..*" Device
 
 class Location {
 Id string
@@ -62,186 +221,6 @@ Name string
 
 
 
-class Aspect {
-Id string
-Name string
-SubAspects []Aspect
-}
-Aspect "1" o- "0..*" Aspect
-
-
-class AspectNode {
-Id string
-Name string
-RootId string
-ParentId string
-ChildIds []string
-AncestorIds []string
-DescendentIds []string
-}
-
-
-
-class ContentVariable {
-Id string
-Name string
-IsVoid bool
-OmitEmpty bool
-Type Type
-SubContentVariables []ContentVariable
-CharacteristicId string
-Value any
-SerializationOptions []string
-UnitReference string
-FunctionId string
-AspectId string
-}
-ContentVariable "0..1" o- "0..1" Type
-ContentVariable "0..1" o- "0..*" ContentVariable
-ContentVariable "0..*" - "0..1" Characteristic
-ContentVariable "0..*" - "0..1" Function
-ContentVariable "0..*" - "0..1" Aspect
-
-class DeviceGroup {
-Id string
-Name string
-Image string
-Criteria []DeviceGroupFilterCriteria
-DeviceIds []string
-CriteriaShort []string
-Attributes []Attribute
-}
-DeviceGroup "1" o- "0..*" DeviceGroupFilterCriteria
-DeviceGroup "0..1" o- "0..*" Attribute
-DeviceGroup "0..*" - "0..*" Device
-
-class DeviceGroupFilterCriteria {
-Interaction Interaction
-FunctionId string
-AspectId string
-DeviceClassId string
-}
-DeviceGroupFilterCriteria "0..1" o- "0..1" Interaction
-DeviceGroupFilterCriteria "0..*" - "0..1" Function
-DeviceGroupFilterCriteria "0..*" - "0..1" Aspect
-DeviceGroupFilterCriteria "0..*" - "0..1" DeviceClass
-
-class DeviceType {
-Id string
-Name string
-Description string
-ServiceGroups []ServiceGroup
-Services []Service
-DeviceClassId string
-Attributes []Attribute
-}
-DeviceType "1" o- "0..*" ServiceGroup
-DeviceType "1" o- "0..*" Service
-DeviceType "0..1" o- "0..*" Attribute
-DeviceType "0..*" - "0..1" DeviceClass
-
-class Hub {
-Id string
-Name string
-Hash string
-DeviceLocalIds []string
-DeviceIds []string
-}
-
-Hub "0..*" - "0..*" Device
-
-class HubEdit {
-Id string
-Name string
-Hash string
-DeviceLocalIds []string
-}
-
-HubEdit "0..*" - "0..*" Device
-
-class Attribute {
-Key string
-Value string
-Origin string
-}
-
-
-
-class Characteristic {
-Id string
-Name string
-DisplayUnit string
-Type Type
-MinValue any
-MaxValue any
-AllowedValues []any
-Value any
-SubCharacteristics []Characteristic
-}
-Characteristic "0..1" o- "0..*" Characteristic
-Characteristic "0..1" o- "0..1" Type
-
-
-class Concept {
-Id string
-Name string
-CharacteristicIds []string
-BaseCharacteristicId string
-Conversions []ConverterExtension
-}
-Concept "0..1" o- "0..*" ConverterExtension
-Concept "0..*" - "0..*" Characteristic
-
-class ConverterExtension {
-From string
-To string
-Distance int64
-Formula string
-PlaceholderName string
-}
-
-
-
-class ConceptWithCharacteristics {
-Id string
-Name string
-BaseCharacteristicId string
-Characteristics []Characteristic
-Conversions []ConverterExtension
-}
-ConceptWithCharacteristics "0..1" o- "0..*" Characteristic
-ConceptWithCharacteristics "0..1" o- "0..*" ConverterExtension
-
-
-class DeviceClass {
-Id string
-Image string
-Name string
-}
-
-
-
-class Content {
-Id string
-ContentVariable ContentVariable
-Serialization Serialization
-ProtocolSegmentId string
-}
-Content "0..1" o- "0..1" ContentVariable
-Content "1" o- "0..1" Serialization
-Content "0..*" - "0..1" ProtocolSegment
-
-class Function {
-Id string
-Name string
-DisplayName string
-Description string
-ConceptId string
-RdfType string
-}
-
-Function "0..*" - "0..1" Concept
-
 class Service {
 Id string
 LocalId string
@@ -255,8 +234,8 @@ Attributes []Attribute
 ServiceGroupKey string
 }
 Service "0..1" o- "0..*" Attribute
-Service "0..1" o- "0..1" Interaction
 Service "0..1" o- "0..*" Content
+Service "0..*" o- "1" Interaction
 Service "0..*" - "0..1" Protocol
 Service "0..*" - "0..1" ServiceGroup
 
@@ -267,5 +246,24 @@ Description string
 }
 
 
+
+enum Interaction {
+		"event"
+"request"
+"event+request"
+	}
+enum Serialization {
+		"xml"
+"json"
+"plain-text"
+	}
+enum Type {
+		"https://schema.org/Text"
+"https://schema.org/Integer"
+"https://schema.org/Float"
+"https://schema.org/Boolean"
+"https://schema.org/ItemList"
+"https://schema.org/StructuredValue"
+	}
 
 @enduml

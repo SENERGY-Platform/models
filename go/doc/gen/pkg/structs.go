@@ -38,7 +38,7 @@ func GetStructFields(spec *ast.TypeSpec) (result []Field) {
 		return nil
 	}
 	for _, field := range stype.Fields.List {
-		fieldTypeName, elementTypeName, many := GetTypeInfo(field.Type)
+		fieldTypeName, elementTypeName, card := GetTypeInfo(field.Type)
 		if field.Names == nil {
 			//embedded types
 			ft, ok := field.Type.(*ast.Ident)
@@ -54,7 +54,7 @@ func GetStructFields(spec *ast.TypeSpec) (result []Field) {
 				Name:        name.String(),
 				Type:        fieldTypeName,
 				ElementType: elementTypeName,
-				Many:        many,
+				Card:        card,
 			})
 		}
 	}
@@ -66,32 +66,35 @@ func GetTypeName(t ast.Expr) string {
 	return result
 }
 
-func GetTypeInfo(t ast.Expr) (fullName string, elementName string, many bool) {
+func GetTypeInfo(t ast.Expr) (fullName string, elementName string, many Cardinality) {
 	switch ft := t.(type) {
 	case *ast.Ident:
 		if ft.Obj != nil {
 			ot, ok := ft.Obj.Type.(*ast.Ident)
 			if ok && GetTypeName(ot) == "string" {
-				return "string", "string", false
+				return "string", "string", ExactOne
 			}
 		}
 		elementName = ft.String()
-		return elementName, elementName, false
+		return elementName, elementName, ExactOne
 	case *ast.ArrayType:
 		fullSub, elemName, _ := GetTypeInfo(ft.Elt)
-		return "[]" + fullSub, elemName, true
+		return "[]" + fullSub, elemName, Many
 	case *ast.MapType:
 		valueTypeName, elemName, _ := GetTypeInfo(ft.Value)
 		keyTypeName, _, _ := GetTypeInfo(ft.Key)
-		return "map[" + keyTypeName + "]" + valueTypeName, elemName, true
+		return "map[" + keyTypeName + "]" + valueTypeName, elemName, Many
 	case *ast.InterfaceType:
 		if len(ft.Methods.List) == 0 {
-			return "any", "any", false
+			return "any", "any", MaxOne
 		} else {
-			return "<Interface>", "<Interface>", false
+			return "<Interface>", "<Interface>", MaxOne
 		}
+	case *ast.StarExpr:
+		fullName, elementName, _ = GetTypeInfo(ft.X)
+		return fullName, elementName, MaxOne
 	default:
-		return "", "", false
+		return "", "", ExactOne
 	}
 }
 

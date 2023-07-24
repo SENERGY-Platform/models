@@ -20,10 +20,9 @@ import (
 	"go/parser"
 	"go/token"
 	"log"
-	"os"
 )
 
-func Gen(source string, output string) {
+func Gen(source string) string {
 	f, err := parser.ParseDir(token.NewFileSet(), source, nil, parser.ParseComments)
 	if err != nil {
 		log.Fatal(err)
@@ -34,18 +33,5 @@ func Gen(source string, output string) {
 	structs := GetStructs(f)
 	structs = SetRelations(structs, enums)
 
-	result := Generate(structs, enums)
-
-	file, err := os.OpenFile(output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = file.Write([]byte(result))
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = file.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return Generate(structs, enums)
 }
