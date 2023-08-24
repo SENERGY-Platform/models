@@ -42,3 +42,5 @@ const (
 	List      Type = "https://schema.org/ItemList"
 	Structure Type = "https://schema.org/StructuredValue"
 )
+
+const SerializationOptionXmlAttribute = "xml/attr"
