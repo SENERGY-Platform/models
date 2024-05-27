@@ -22,4 +22,5 @@ type Device struct {
 	Name         string      `json:"name"`
 	Attributes   []Attribute `json:"attributes"`
 	DeviceTypeId string      `json:"device_type_id"`
+	OwnerId      string      `json:"owner_id"`
 }
