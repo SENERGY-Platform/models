@@ -24,6 +24,7 @@ type Hub struct {
 	Hash           string   `json:"hash"`
 	DeviceLocalIds []string `json:"device_local_ids"`
 	DeviceIds      []string `json:"device_ids"` //not user defined; set by finding device-ids of this.DeviceLocalIds
+	OwnerId        string   `json:"owner_id"`
 }
 
 // HubEdit is Hub without Hub.DeviceIds
@@ -33,6 +34,7 @@ type HubEdit struct {
 	Name           string   `json:"name"`
 	Hash           string   `json:"hash"`
 	DeviceLocalIds []string `json:"device_local_ids"`
+	OwnerId        string   `json:"owner_id"`
 }
 
 func (this *Hub) ToHubEdit() HubEdit {
