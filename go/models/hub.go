@@ -43,6 +43,7 @@ func (this *Hub) ToHubEdit() HubEdit {
 		Name:           this.Name,
 		Hash:           this.Hash,
 		DeviceLocalIds: this.DeviceLocalIds,
+		OwnerId:        this.OwnerId,
 	}
 }
 
@@ -52,5 +53,6 @@ func (this *HubEdit) ToHub() Hub {
 		Name:           this.Name,
 		Hash:           this.Hash,
 		DeviceLocalIds: this.DeviceLocalIds,
+		OwnerId:        this.OwnerId,
 	}
 }
