@@ -16,43 +16,11 @@
 
 package models
 
-// Hub doesn't use embedded HubEdit because it's used by device-repository mongodb/bson operations
-// and the `bson:",inline"`tag would violate "separation of concerns"
 type Hub struct {
 	Id             string   `json:"id"`
 	Name           string   `json:"name"`
 	Hash           string   `json:"hash"`
 	DeviceLocalIds []string `json:"device_local_ids"`
-	DeviceIds      []string `json:"device_ids"` //not user defined; set by finding device-ids of this.DeviceLocalIds
+	DeviceIds      []string `json:"device_ids"`
 	OwnerId        string   `json:"owner_id"`
-}
-
-// HubEdit is Hub without Hub.DeviceIds
-// used in device-manager operations with no valid use of Hub.DeviceIds
-type HubEdit struct {
-	Id             string   `json:"id"`
-	Name           string   `json:"name"`
-	Hash           string   `json:"hash"`
-	DeviceLocalIds []string `json:"device_local_ids"`
-	OwnerId        string   `json:"owner_id"`
-}
-
-func (this *Hub) ToHubEdit() HubEdit {
-	return HubEdit{
-		Id:             this.Id,
-		Name:           this.Name,
-		Hash:           this.Hash,
-		DeviceLocalIds: this.DeviceLocalIds,
-		OwnerId:        this.OwnerId,
-	}
-}
-
-func (this *HubEdit) ToHub() Hub {
-	return Hub{
-		Id:             this.Id,
-		Name:           this.Name,
-		Hash:           this.Hash,
-		DeviceLocalIds: this.DeviceLocalIds,
-		OwnerId:        this.OwnerId,
-	}
 }

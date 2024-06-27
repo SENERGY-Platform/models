@@ -112,6 +112,7 @@ LocalId string
 Name string
 Attributes []Attribute
 DeviceTypeId string
+OwnerId string
 }
 Device "0..1" o- "0..*" Attribute
 Device "0..*" - "0..1" DeviceType
@@ -179,18 +180,10 @@ Name string
 Hash string
 DeviceLocalIds []string
 DeviceIds []string
+OwnerId string
 }
 
 Hub "0..*" - "0..*" Device
-
-class HubEdit {
-Id string
-Name string
-Hash string
-DeviceLocalIds []string
-}
-
-HubEdit "0..*" - "0..*" Device
 
 class Location {
 Id string
