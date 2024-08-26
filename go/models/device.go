@@ -24,3 +24,25 @@ type Device struct {
 	DeviceTypeId string      `json:"device_type_id"`
 	OwnerId      string      `json:"owner_id"`
 }
+
+type ExtendedDevice struct {
+	Device
+	ConnectionState ConnectionState `json:"connection_state"`
+	DisplayName     string          `json:"display_name"  bson:"-"`    //computed on request, not stored
+	DeviceTypeName  string          `json:"device_type_name" bson:"-"` //computed on request, not stored
+	Shared          bool            `json:"shared" bson:"-"`           //computed on request, not stored
+	Permissions     Permissions     `json:"permissions" bson:"-"`      //computed on request, not stored
+}
+
+type ConnectionState = string
+
+const ConnectionStateOnline = "online"
+const ConnectionStateOffline = "offline"
+const ConnectionStateUnknown = ""
+
+type Permissions struct {
+	Read         bool `json:"read"`
+	Write        bool `json:"write"`
+	Execute      bool `json:"execute"`
+	Administrate bool `json:"administrate"`
+}

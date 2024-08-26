@@ -24,3 +24,10 @@ type Hub struct {
 	DeviceIds      []string `json:"device_ids"`
 	OwnerId        string   `json:"owner_id"`
 }
+
+type ExtendedHub struct {
+	Hub
+	ConnectionState ConnectionState `json:"connection_state"`
+	Shared          bool            `json:"shared" bson:"-"`      //computed on request, not stored
+	Permissions     Permissions     `json:"permissions" bson:"-"` //computed on request, not stored
+}
