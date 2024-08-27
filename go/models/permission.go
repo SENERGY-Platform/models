@@ -25,7 +25,8 @@ type Permissions struct {
 
 type PermissionFlag rune
 
-const Read PermissionFlag = 'r'         //user may read the resource (metadata)  (e.g. read device name)
-const Write PermissionFlag = 'w'        //user may write the resource (metadata)(e.g. rename device)
-const Administrate PermissionFlag = 'a' // user may delete resource; user may change resource rights (e.g. delete device)
-const Execute PermissionFlag = 'x'      //user may use the resource (e.g. cmd to device; read device data; read database)
+const UnsetPermissionFlag PermissionFlag = 0 //to identify where default values must be used
+const Read PermissionFlag = 'r'              //user may read the resource (metadata)  (e.g. read device name)
+const Write PermissionFlag = 'w'             //user may write the resource (metadata)(e.g. rename device)
+const Administrate PermissionFlag = 'a'      // user may delete resource; user may change resource rights (e.g. delete device)
+const Execute PermissionFlag = 'x'           //user may use the resource (e.g. cmd to device; read device data; read database)
