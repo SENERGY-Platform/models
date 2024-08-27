@@ -39,10 +39,3 @@ type ConnectionState = string
 const ConnectionStateOnline = "online"
 const ConnectionStateOffline = "offline"
 const ConnectionStateUnknown = ""
-
-type Permissions struct {
-	Read         bool `json:"read"`
-	Write        bool `json:"write"`
-	Execute      bool `json:"execute"`
-	Administrate bool `json:"administrate"`
-}
