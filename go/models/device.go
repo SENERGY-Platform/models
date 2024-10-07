@@ -29,9 +29,10 @@ type ExtendedDevice struct {
 	Device
 	ConnectionState ConnectionState `json:"connection_state"`
 	DisplayName     string          `json:"display_name"  bson:"display_name"`
-	DeviceTypeName  string          `json:"device_type_name" bson:"-"` //computed on request, not stored
-	Shared          bool            `json:"shared" bson:"-"`           //computed on request, not stored
-	Permissions     Permissions     `json:"permissions" bson:"-"`      //computed on request, not stored
+	DeviceTypeName  string          `json:"device_type_name" bson:"-"`      //computed on request, not stored
+	DeviceType      *DeviceType     `json:"device_type,omitempty" bson:"-"` //optional
+	Shared          bool            `json:"shared" bson:"-"`                //computed on request, not stored
+	Permissions     Permissions     `json:"permissions" bson:"-"`           //computed on request, not stored
 }
 
 type ConnectionState = string
