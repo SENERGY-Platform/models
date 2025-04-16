@@ -80,14 +80,21 @@ type IncidentHandling struct {
 }
 
 type Selection struct {
-	FilterCriteria             FilterCriteria      `json:"filter_criteria"`
-	SelectionOptions           []SelectionOption   `json:"selection_options"`
-	SelectedDeviceId           *string             `json:"selected_device_id"`
-	SelectedServiceId          *string             `json:"selected_service_id"`
-	SelectedDeviceGroupId      *string             `json:"selected_device_group_id"`
-	SelectedImportId           *string             `json:"selected_import_id"`
-	SelectedGenericEventSource *GenericEventSource `json:"selected_generic_event_source"`
-	SelectedPath               *PathOption         `json:"selected_path"`
+	FilterCriteria             SelectionFilterCriteria `json:"filter_criteria"`
+	SelectionOptions           []SelectionOption       `json:"selection_options"`
+	SelectedDeviceId           *string                 `json:"selected_device_id"`
+	SelectedServiceId          *string                 `json:"selected_service_id"`
+	SelectedDeviceGroupId      *string                 `json:"selected_device_group_id"`
+	SelectedImportId           *string                 `json:"selected_import_id"`
+	SelectedGenericEventSource *GenericEventSource     `json:"selected_generic_event_source"`
+	SelectedPath               *PathOption             `json:"selected_path"`
+}
+
+type SelectionFilterCriteria struct {
+	CharacteristicId *string `json:"characteristic_id"`
+	FunctionId       *string `json:"function_id"`
+	DeviceClassId    *string `json:"device_class_id"`
+	AspectId         *string `json:"aspect_id"`
 }
 
 type SelectionOption struct {
