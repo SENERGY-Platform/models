@@ -80,17 +80,17 @@ type IncidentHandling struct {
 }
 
 type Selection struct {
-	FilterCriteria             SelectionFilterCriteria `json:"filter_criteria"`
-	SelectionOptions           []SelectionOption       `json:"selection_options"`
-	SelectedDeviceId           *string                 `json:"selected_device_id"`
-	SelectedServiceId          *string                 `json:"selected_service_id"`
-	SelectedDeviceGroupId      *string                 `json:"selected_device_group_id"`
-	SelectedImportId           *string                 `json:"selected_import_id"`
-	SelectedGenericEventSource *GenericEventSource     `json:"selected_generic_event_source"`
-	SelectedPath               *PathOption             `json:"selected_path"`
+	FilterCriteria             ProcessFilterCriteria `json:"filter_criteria"`
+	SelectionOptions           []SelectionOption     `json:"selection_options"`
+	SelectedDeviceId           *string               `json:"selected_device_id"`
+	SelectedServiceId          *string               `json:"selected_service_id"`
+	SelectedDeviceGroupId      *string               `json:"selected_device_group_id"`
+	SelectedImportId           *string               `json:"selected_import_id"`
+	SelectedGenericEventSource *GenericEventSource   `json:"selected_generic_event_source"`
+	SelectedPath               *PathOption           `json:"selected_path"`
 }
 
-type SelectionFilterCriteria struct {
+type ProcessFilterCriteria struct {
 	CharacteristicId *string `json:"characteristic_id"`
 	FunctionId       *string `json:"function_id"`
 	DeviceClassId    *string `json:"device_class_id"`
@@ -125,4 +125,17 @@ type SelectionDeviceGroup struct {
 type SelectionService struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
+}
+
+func (this ProcessFilterCriteria) ToFilterCriteria() (result FilterCriteria) {
+	if this.FunctionId != nil {
+		result.FunctionId = *this.FunctionId
+	}
+	if this.DeviceClassId != nil {
+		result.DeviceClassId = *this.DeviceClassId
+	}
+	if this.AspectId != nil {
+		result.AspectId = *this.AspectId
+	}
+	return
 }
