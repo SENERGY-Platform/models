@@ -67,11 +67,22 @@ type Notification struct {
 }
 
 type MessageEvent struct {
-	Value         string    `json:"value"`
-	FlowId        string    `json:"flow_id"`
-	EventId       string    `json:"event_id"`
-	UseMarshaller bool      `json:"use_marshaller"`
-	Selection     Selection `json:"selection"`
+	Value         string `json:"value"`
+	EventId       string `json:"event_id"`
+	UseMarshaller bool   `json:"use_marshaller"`
+
+	Selection Selection `json:"selection"`
+
+	//TODO: implement usage in Process-Deployment, Frontend, Event-Deployment, Ewent-Worker (currently unused)
+	//information if event should be triggered by analytics value
+	AnalyticsSelection *AnalyticsSelection `json:"analytics_selection,omitempty"`
+}
+
+type AnalyticsSelection struct {
+	PipelineId    string `json:"pipeline_id"`    //auth required
+	OperatorId    string `json:"operator_id"`    //the id of the operator in the flow
+	OperatorTopic string `json:"operator_topic"` // "analytics-<name-of-operator>"
+	OutputName    string `json:"output_name"`
 }
 
 type ConditionalEvent struct {
