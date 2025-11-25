@@ -56,3 +56,18 @@ const PREFIX_SES = "PREFIX ses: <https://senergy.infai.org/ontology/> "
 const PREFIX_RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 
 const URN_PREFIX = "urn:infai:ses:"
+
+const (
+	DEVICE_CLASS_PREFIX         = URN_PREFIX + "device-class"
+	MEASURING_FUNCTION_PREFIX   = URN_PREFIX + "measuring-function"
+	CONTROLLING_FUNCTION_PREFIX = URN_PREFIX + "controlling-function"
+	ASPECT_PREFIX               = URN_PREFIX + "aspect"
+	CONCEPT_PREFIX              = URN_PREFIX + "concept"
+	CHARACTERISTIC_PREFIX       = URN_PREFIX + "characteristic"
+	DEVICE_TYPE_PREFIX          = URN_PREFIX + "device-type"
+	SERVICE_PREFIX              = URN_PREFIX + "service"
+	PROTOCOL_PREFIX             = URN_PREFIX + "protocol"
+	PROTOCOL_SEGMENT_PREFIX     = URN_PREFIX + "protocol-segment"
+	CONTENT_PREFIX              = URN_PREFIX + "content"
+	CONTENT_VARIABLE_PREFIX     = URN_PREFIX + "content-variable"
+)
