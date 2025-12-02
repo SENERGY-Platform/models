@@ -24,3 +24,8 @@ type Location struct {
 	DeviceIds      []string `json:"device_ids"`
 	DeviceGroupIds []string `json:"device_group_ids"`
 }
+
+type ExtendedLocation struct {
+	Location
+	Permissions Permissions `json:"permissions" bson:"-"` //computed on request, not stored
+}
