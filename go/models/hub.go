@@ -17,12 +17,13 @@
 package models
 
 type Hub struct {
-	Id             string   `json:"id"`
-	Name           string   `json:"name"`
-	Hash           string   `json:"hash"`
-	DeviceLocalIds []string `json:"device_local_ids"`
-	DeviceIds      []string `json:"device_ids"`
-	OwnerId        string   `json:"owner_id"`
+	Id             string      `json:"id"`
+	Name           string      `json:"name"`
+	Hash           string      `json:"hash"`
+	DeviceLocalIds []string    `json:"device_local_ids"`
+	DeviceIds      []string    `json:"device_ids"`
+	OwnerId        string      `json:"owner_id"`
+	Attributes     []Attribute `json:"attributes"`
 }
 
 type ExtendedHub struct {
