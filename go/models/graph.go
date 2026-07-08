@@ -57,7 +57,7 @@ type Edge struct {
 	Attributes []Attribute `json:"attributes"`
 }
 
-type GraphResourceType string
+type GraphResourceType = string
 
 func (this *Graph) createId() string {
 	if this.IdProvider != nil {
