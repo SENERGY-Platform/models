@@ -26,11 +26,20 @@ import (
 
 const GraphEdgeAttrSystemChanged = "system_changed"
 
+const GraphResourceTypeDevice GraphResourceType = "device"
+
+var ErrGraphLoop = fmt.Errorf("graph contains cycle/loop")
+
+var DefaultGraphIdProvider = func() string {
+	return uuid.NewString()
+}
+
 type Graph struct {
-	Id         string      `json:"id"`
-	Attributes []Attribute `json:"attributes"`
-	Nodes      []Node      `json:"nodes"`
-	Edges      []Edge      `json:"edges"`
+	Id         string        `json:"id"`
+	Attributes []Attribute   `json:"attributes"`
+	Nodes      []Node        `json:"nodes"`
+	Edges      []Edge        `json:"edges"`
+	IdProvider func() string `json:"-"`
 }
 
 type Node struct {
@@ -50,9 +59,12 @@ type Edge struct {
 
 type GraphResourceType string
 
-const (
-	GraphResourceTypeDevice GraphResourceType = "device"
-)
+func (this *Graph) createId() string {
+	if this.IdProvider != nil {
+		return this.IdProvider()
+	}
+	return DefaultGraphIdProvider()
+}
 
 func (this *Graph) Valid() error {
 	nodeIds := map[string]bool{}
@@ -83,10 +95,13 @@ func (this *Graph) Valid() error {
 
 	for _, edge := range this.Edges {
 		if edge.Id == "" {
-			return errors.New("missing edge id")
+			return fmt.Errorf("missing edge id between %v and %v", edge.FromNodeId, edge.ToNodeId)
 		}
 		if edgeIds[edge.Id] {
 			return fmt.Errorf("duplicate edge id: %v", edge.Id)
+		}
+		if edge.Weight <= 0 || edge.Weight > 100 {
+			return fmt.Errorf("invalid edge weight: %v in %v", edge.Weight, edge.Id)
 		}
 		edgeIds[edge.Id] = true
 
@@ -97,8 +112,8 @@ func (this *Graph) Valid() error {
 			return fmt.Errorf("unknown to node id: %v", edge.ToNodeId)
 		}
 
-		if edgeDirections[edge.FromNodeId] != nil && edgeDirections[edge.FromNodeId][edge.ToNodeId] != edge.Id {
-			return fmt.Errorf("duplicate edge between nodes: %v -> %v", edge.FromNodeId, edge.ToNodeId)
+		if edgeDirections[edge.FromNodeId] != nil && edgeDirections[edge.FromNodeId][edge.ToNodeId] != "" && edgeDirections[edge.FromNodeId][edge.ToNodeId] != edge.Id {
+			return fmt.Errorf("duplicate edge between nodes: %v -> %v (%v vs %v)", edge.FromNodeId, edge.ToNodeId, edgeDirections[edge.FromNodeId][edge.ToNodeId], edge.Id)
 		}
 		if edgeDirections[edge.FromNodeId] == nil {
 			edgeDirections[edge.FromNodeId] = map[string]string{}
@@ -106,6 +121,31 @@ func (this *Graph) Valid() error {
 		edgeDirections[edge.FromNodeId][edge.ToNodeId] = edge.Id
 
 		outgoingWeightSums[edge.FromNodeId] += edge.Weight
+	}
+
+	if this.ContainsLoop() {
+		return ErrGraphLoop
+	}
+
+	endNodes := []Node{}
+	for _, node := range this.Nodes {
+		if len(edgeDirections[node.Id]) == 0 {
+			endNodes = append(endNodes, node)
+		}
+	}
+	if len(endNodes) == 0 {
+		return errors.New("the graph must have exactly one node that has no outputs, none where found")
+	}
+	if len(endNodes) > 1 {
+		ids := []string{}
+		for _, node := range endNodes {
+			ids = append(ids, node.Id)
+		}
+		return fmt.Errorf("the graph must have exactly one node that has no outputs, %v where found (%+v)", len(ids), ids)
+	}
+
+	if endNodes[0].ResourceType == GraphResourceTypeDevice {
+		return fmt.Errorf("the end node may not have the resource_type '%v'", GraphResourceTypeDevice)
 	}
 
 	for nodeId, sum := range outgoingWeightSums {
@@ -180,17 +220,14 @@ func (this *Graph) DeleteNode(nodeId string) {
 }
 
 func (this *Graph) rerouteEdge(edge Edge, copyDestinationFrom []Edge) {
-	sum := 0
-	for _, e := range copyDestinationFrom {
-		sum = sum + e.Weight
-	}
 	newEdges := []Edge{}
 	for _, destination := range copyDestinationFrom {
+		newWeigt := float64(edge.Weight) * (float64(destination.Weight) / 100) //assumption: sum of all weights of copyDestinationFrom is 100 (ref validation outgoingWeightSums)
 		newEdge := Edge{
-			Id:         uuid.NewString(),
+			Id:         this.createId(),
 			FromNodeId: edge.FromNodeId,
 			ToNodeId:   destination.ToNodeId,
-			Weight:     destination.Weight * (sum / destination.Weight),
+			Weight:     int(newWeigt),
 			Attributes: []Attribute{
 				{
 					Key:   GraphEdgeAttrSystemChanged,
@@ -214,8 +251,9 @@ func (this *Graph) mergeDuplicateEdge(edge Edge) {
 	for i, e := range this.Edges {
 		if e.FromNodeId == edge.FromNodeId && e.ToNodeId == edge.ToNodeId && e.Id != edge.Id {
 			e.Weight += edge.Weight
+			e.Attributes = []Attribute{{Key: GraphEdgeAttrSystemChanged, Value: "true"}}
 			this.Edges[i] = e
-			slices.DeleteFunc(this.Edges, func(e2 Edge) bool {
+			this.Edges = slices.DeleteFunc(this.Edges, func(e2 Edge) bool {
 				return e2.Id == edge.Id
 			})
 			return
@@ -234,6 +272,14 @@ func (this *Graph) ensureValidEdgeWeights() {
 			for i, edge := range this.Edges {
 				if edge.FromNodeId == nodeId {
 					edge.Weight += diff
+					attrIndex := slices.IndexFunc(edge.Attributes, func(a Attribute) bool {
+						return a.Key == GraphEdgeAttrSystemChanged
+					})
+					if attrIndex == -1 {
+						edge.Attributes = append(edge.Attributes, Attribute{Key: GraphEdgeAttrSystemChanged, Value: "true"})
+					} else {
+						edge.Attributes[i].Value = "true"
+					}
 					this.Edges[i] = edge
 					break
 				}
