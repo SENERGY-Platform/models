@@ -68,6 +68,10 @@ func (this *Graph) Valid() error {
 	resourceIds := map[string]bool{}
 	outgoingWeightSums := map[string]int{}
 
+	if this.Owner == "" {
+		return errors.New("graph owner is required")
+	}
+
 	for _, node := range this.Nodes {
 		if node.Id == "" {
 			return errors.New("missing node id")

@@ -34,7 +34,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -87,7 +88,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "orga",
@@ -176,7 +178,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -313,7 +316,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -450,7 +454,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -593,7 +598,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -730,7 +736,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -867,7 +874,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{
 					Id:           "o",
@@ -1004,7 +1012,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "2"},
@@ -1031,7 +1040,8 @@ func TestGraphValidation(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "2"},
@@ -1064,7 +1074,8 @@ func TestGraphNodeDelete(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "2"},
@@ -1094,7 +1105,8 @@ func TestGraphNodeDelete(t *testing.T) {
 		}
 
 		expectedResultGraph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "3"},
@@ -1122,7 +1134,8 @@ func TestGraphNodeDelete(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "2"},
@@ -1152,7 +1165,8 @@ func TestGraphNodeDelete(t *testing.T) {
 		}
 
 		expectedResultGraph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "3"},
@@ -1181,7 +1195,8 @@ func TestGraphNodeDelete(t *testing.T) {
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
 		graph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "2"},
@@ -1207,7 +1222,8 @@ func TestGraphNodeDelete(t *testing.T) {
 		}
 
 		expectedResultGraph := Graph{
-			Id: "a",
+			Id:    "a",
+			Owner: "test",
 			Nodes: []Node{
 				{Id: "1"},
 				{Id: "s2"},
