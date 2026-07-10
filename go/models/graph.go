@@ -30,16 +30,16 @@ const GraphResourceTypeDevice GraphResourceType = "device"
 
 var ErrGraphLoop = fmt.Errorf("graph contains cycle/loop")
 
-var DefaultGraphIdProvider = func() string {
+var GraphIdProvider = func() string {
 	return uuid.NewString()
 }
 
 type Graph struct {
-	Id         string        `json:"id"`
-	Attributes []Attribute   `json:"attributes"`
-	Nodes      []Node        `json:"nodes"`
-	Edges      []Edge        `json:"edges"`
-	IdProvider func() string `json:"-"`
+	Id         string      `json:"id"`
+	Attributes []Attribute `json:"attributes"`
+	Nodes      []Node      `json:"nodes"`
+	Edges      []Edge      `json:"edges"`
+	Owner      string      `json:"owner"`
 }
 
 type Node struct {
@@ -60,10 +60,7 @@ type Edge struct {
 type GraphResourceType = string
 
 func (this *Graph) createId() string {
-	if this.IdProvider != nil {
-		return this.IdProvider()
-	}
-	return DefaultGraphIdProvider()
+	return GraphIdProvider()
 }
 
 func (this *Graph) Valid() error {

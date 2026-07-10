@@ -29,7 +29,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("tree", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -73,7 +73,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err != nil {
@@ -83,7 +82,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("orga", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -163,7 +162,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err != nil {
@@ -173,7 +171,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o no loop", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -301,7 +299,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err != nil {
@@ -311,7 +308,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o loop flip it o", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -439,7 +436,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if !errors.Is(err, ErrGraphLoop) {
@@ -449,7 +445,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o loop add it uo1uo1", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -583,7 +579,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if !errors.Is(err, ErrGraphLoop) {
@@ -593,7 +588,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o 0 weight", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -721,7 +716,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err == nil {
@@ -731,7 +725,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o missing output", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -859,7 +853,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err == nil {
@@ -869,7 +862,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("o unexpected output", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -997,7 +990,6 @@ func TestGraphValidation(t *testing.T) {
 					Weight:     100,
 				},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		if err == nil {
@@ -1007,7 +999,7 @@ func TestGraphValidation(t *testing.T) {
 
 	t.Run("to many end nodes", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -1025,7 +1017,6 @@ func TestGraphValidation(t *testing.T) {
 				{Id: "2->3", FromNodeId: "2", ToNodeId: "3", Weight: 50},
 				{Id: "2->4", FromNodeId: "2", ToNodeId: "4", Weight: 50},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		t.Log(err)
@@ -1035,7 +1026,7 @@ func TestGraphValidation(t *testing.T) {
 	})
 	t.Run("end node has resource_type device", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -1056,7 +1047,6 @@ func TestGraphValidation(t *testing.T) {
 				{Id: "3->5", FromNodeId: "3", ToNodeId: "5", Weight: 100},
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 			},
-			IdProvider: idProvider,
 		}
 		err := graph.Valid()
 		t.Log(err)
@@ -1069,7 +1059,7 @@ func TestGraphValidation(t *testing.T) {
 func TestGraphNodeDelete(t *testing.T) {
 	t.Run("with simple merge", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -1090,7 +1080,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "3->5", FromNodeId: "3", ToNodeId: "5", Weight: 100},
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 			},
-			IdProvider: idProvider,
 		}
 		graph.DeleteNode("2")
 		err := graph.Valid()
@@ -1118,7 +1107,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 				{Id: "id-2", FromNodeId: "1", ToNodeId: "4", Weight: 40, Attributes: []Attribute{{Key: GraphEdgeAttrSystemChanged, Value: "true"}}},
 			},
-			IdProvider: idProvider,
 		}
 
 		graph = normalize(graph)
@@ -1129,7 +1117,7 @@ func TestGraphNodeDelete(t *testing.T) {
 	})
 	t.Run("with weight correction", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -1150,7 +1138,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "3->5", FromNodeId: "3", ToNodeId: "5", Weight: 100},
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 			},
-			IdProvider: idProvider,
 		}
 		graph.DeleteNode("2")
 		err := graph.Valid()
@@ -1178,7 +1165,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 				{Id: "id-2", FromNodeId: "1", ToNodeId: "4", Weight: 42, Attributes: []Attribute{{Key: GraphEdgeAttrSystemChanged, Value: "true"}}},
 			},
-			IdProvider: idProvider,
 		}
 
 		graph = normalize(graph)
@@ -1190,7 +1176,7 @@ func TestGraphNodeDelete(t *testing.T) {
 
 	t.Run("multiple inputs and outputs", func(t *testing.T) {
 		idProviderValue := 0
-		idProvider := func() string {
+		GraphIdProvider = func() string {
 			idProviderValue++
 			return fmt.Sprintf("id-%v", idProviderValue)
 		}
@@ -1213,7 +1199,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "3->5", FromNodeId: "3", ToNodeId: "5", Weight: 100},
 				{Id: "4->5", FromNodeId: "4", ToNodeId: "5", Weight: 100},
 			},
-			IdProvider: idProvider,
 		}
 		graph.DeleteNode("2")
 		err := graph.Valid()
@@ -1238,7 +1223,6 @@ func TestGraphNodeDelete(t *testing.T) {
 				{Id: "id-3", FromNodeId: "s2", ToNodeId: "3", Weight: 30, Attributes: []Attribute{{Key: GraphEdgeAttrSystemChanged, Value: "true"}}},
 				{Id: "id-4", FromNodeId: "s2", ToNodeId: "4", Weight: 70, Attributes: []Attribute{{Key: GraphEdgeAttrSystemChanged, Value: "true"}}},
 			},
-			IdProvider: idProvider,
 		}
 
 		graph = normalize(graph)
