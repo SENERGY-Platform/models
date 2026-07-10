@@ -139,3 +139,9 @@ func (variable *ContentVariable) GenerateId() {
 		variable.SubContentVariables[i] = v
 	}
 }
+
+func (this *Graph) GenerateId() {
+	if this.Id == "" {
+		this.Id = URN_PREFIX + "graph:" + uuid.New().String()
+	}
+}
