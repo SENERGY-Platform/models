@@ -63,6 +63,12 @@ func (aspect *Aspect) GenerateId() {
 	}
 }
 
+func (ac *AspectClass) GenerateId() {
+	if ac.Id == "" {
+		ac.Id = URN_PREFIX + "aspect-class:" + uuid.New().String()
+	}
+}
+
 func (concept *Concept) GenerateId() {
 	if concept.Id == "" {
 		concept.Id = URN_PREFIX + "concept:" + uuid.New().String()

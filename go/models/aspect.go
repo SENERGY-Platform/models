@@ -17,14 +17,16 @@
 package models
 
 type Aspect struct {
-	Id         string   `json:"id"`
-	Name       string   `json:"name"`
-	SubAspects []Aspect `json:"sub_aspects"`
+	Id            string   `json:"id"`
+	Name          string   `json:"name"`
+	AspectClassId string   `json:"aspect_class_id"`
+	SubAspects    []Aspect `json:"sub_aspects"`
 }
 
 type AspectNode struct {
 	Id            string   `json:"id"`
 	Name          string   `json:"name"`
+	AspectClassId string   `json:"aspect_class_id"`
 	RootId        string   `json:"root_id"`
 	ParentId      string   `json:"parent_id"`
 	ChildIds      []string `json:"child_ids"`
