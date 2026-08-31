@@ -28,7 +28,8 @@ type ContentVariable struct {
 	SerializationOptions []string          `json:"serialization_options"`
 	UnitReference        string            `json:"unit_reference,omitempty"`
 	FunctionId           string            `json:"function_id,omitempty"`
-	AspectId             string            `json:"aspect_id,omitempty"`
+	AspectId             string            `json:"aspect_id,omitempty"` //deprecated: please use AspectIds
+	AspectIds            []string          `json:"aspect_ids,omitempty"`
 }
 
 type Type string
