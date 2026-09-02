@@ -16,6 +16,11 @@
 
 package models
 
+import (
+	"sort"
+	"strings"
+)
+
 type Selectable struct {
 	Device             *DeviceWithDisplayName  `json:"device"`
 	Services           []Service               `json:"services"`
@@ -35,9 +40,24 @@ type FilterCriteriaAndSet []FilterCriteria
 type FilterCriteriaOrSet []FilterCriteria
 
 type FilterCriteria struct {
-	FunctionId    string `json:"function_id"`
-	DeviceClassId string `json:"device_class_id"`
-	AspectId      string `json:"aspect_id"`
+	FunctionId    string   `json:"function_id"`
+	DeviceClassId string   `json:"device_class_id"`
+	AspectId      string   `json:"aspect_id"` //deprecated: please use AspectIds
+	AspectIds     []string `json:"aspect_ids,omitempty"`
+}
+
+// AspectIdsShort renders aspect ids for use in a Short() criteria key. AspectId
+// is an alias for an AspectIds list with a single element, so it is only used if
+// AspectIds is empty. The ids are sorted to give criteria with the same set of
+// aspects the same key, independent of the order they were listed in.
+func AspectIdsShort(aspectId string, aspectIds []string) string {
+	if len(aspectIds) == 0 {
+		return aspectId
+	}
+	sorted := make([]string, len(aspectIds))
+	copy(sorted, aspectIds)
+	sort.Strings(sorted)
+	return strings.Join(sorted, ",")
 }
 
 type FilterCriteriaWithInteraction struct {

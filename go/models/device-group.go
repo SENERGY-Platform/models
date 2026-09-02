@@ -37,10 +37,11 @@ func (this *DeviceGroup) SetShortCriteria() {
 type DeviceGroupFilterCriteria struct {
 	Interaction   Interaction `json:"interaction"`
 	FunctionId    string      `json:"function_id"`
-	AspectId      string      `json:"aspect_id"`
+	AspectId      string      `json:"aspect_id"` //deprecated: please use AspectIds
+	AspectIds     []string    `json:"aspect_ids,omitempty"`
 	DeviceClassId string      `json:"device_class_id"`
 }
 
 func (this DeviceGroupFilterCriteria) Short() string {
-	return this.FunctionId + "_" + this.AspectId + "_" + this.DeviceClassId + "_" + string(this.Interaction)
+	return this.FunctionId + "_" + AspectIdsShort(this.AspectId, this.AspectIds) + "_" + this.DeviceClassId + "_" + string(this.Interaction)
 }

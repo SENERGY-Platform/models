@@ -107,10 +107,11 @@ type Selection struct {
 }
 
 type ProcessFilterCriteria struct {
-	CharacteristicId *string `json:"characteristic_id"`
-	FunctionId       *string `json:"function_id"`
-	DeviceClassId    *string `json:"device_class_id"`
-	AspectId         *string `json:"aspect_id"`
+	CharacteristicId *string  `json:"characteristic_id"`
+	FunctionId       *string  `json:"function_id"`
+	DeviceClassId    *string  `json:"device_class_id"`
+	AspectId         *string  `json:"aspect_id"` //deprecated: please use AspectIds
+	AspectIds        []string `json:"aspect_ids,omitempty"`
 }
 
 type SelectionOption struct {
@@ -153,5 +154,6 @@ func (this ProcessFilterCriteria) ToFilterCriteria() (result FilterCriteria) {
 	if this.AspectId != nil {
 		result.AspectId = *this.AspectId
 	}
+	result.AspectIds = this.AspectIds
 	return
 }
