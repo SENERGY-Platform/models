@@ -95,22 +95,29 @@ type BulkResultElement struct {
 	Selectables []Selectable `json:"selectables"`
 }
 
+// PathOption is one way a service offers what a filter criteria asked for. It is the shape of
+// the device-selection selectables answer, which is why its json is camelCase, unlike the
+// device-type-selectables shape in ServicePathOption.
 type PathOption struct {
 	Path             string         `json:"path"`
 	CharacteristicId string         `json:"characteristicId"`
-	AspectNode       AspectNode     `json:"aspectNode"`
+	AspectNode       AspectNode     `json:"aspectNode"` //deprecated: alias for a single element AspectNodes; holds the node with the alphabetically first id
+	AspectNodes      []AspectNode   `json:"aspectNodes,omitempty"`
 	FunctionId       string         `json:"functionId"`
 	IsVoid           bool           `json:"isVoid"`
 	Value            interface{}    `json:"value,omitempty"`
-	Type             string         `json:"type,omitempty"`
+	Type             Type           `json:"type,omitempty"`
 	Configurables    []Configurable `json:"configurables,omitempty"`
+	Interaction      Interaction    `json:"interaction,omitempty"`
 }
 
+// Configurable is a sibling variable of a path option that can be set along with it.
 type Configurable struct {
-	Path             string      `json:"path"`
-	CharacteristicId string      `json:"characteristic_id"`
-	AspectNode       AspectNode  `json:"aspect_node"`
-	FunctionId       string      `json:"function_id"`
-	Value            interface{} `json:"value,omitempty"`
-	Type             string      `json:"type,omitempty"`
+	Path             string       `json:"path"`
+	CharacteristicId string       `json:"characteristic_id"`
+	AspectNode       AspectNode   `json:"aspect_node"` //deprecated: alias for a single element AspectNodes; holds the node with the alphabetically first id
+	AspectNodes      []AspectNode `json:"aspect_nodes,omitempty"`
+	FunctionId       string       `json:"function_id"`
+	Value            interface{}  `json:"value,omitempty"`
+	Type             Type         `json:"type,omitempty"`
 }
