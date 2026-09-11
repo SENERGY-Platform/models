@@ -22,9 +22,10 @@ type ImportType struct {
 	Description    string                `json:"description"`
 	Image          string                `json:"image"`
 	DefaultRestart bool                  `json:"default_restart"`
-	Configs        []ImportConfig        `json:"configs"`
+	Configs        []ImportTypeConfig    `json:"configs"`
 	Output         ImportContentVariable `json:"output"`
 	Owner          string                `json:"owner"`
+	Cost           uint64                `json:"cost"`
 }
 
 type ImportContentVariable struct {
@@ -34,7 +35,8 @@ type ImportContentVariable struct {
 	SubContentVariables []ImportContentVariable `json:"sub_content_variables"`
 	UseAsTag            bool                    `json:"use_as_tag"`
 	FunctionId          string                  `json:"function_id,omitempty"`
-	AspectId            string                  `json:"aspect_id,omitempty"`
+	AspectId            string                  `json:"aspect_id,omitempty"` //deprecated: please use AspectIds
+	AspectIds           []string                `json:"aspect_ids,omitempty"`
 }
 
 type ImportTypeConfig struct {
@@ -42,6 +44,11 @@ type ImportTypeConfig struct {
 	Description  string      `json:"description"`
 	Type         Type        `json:"type"`
 	DefaultValue interface{} `json:"default_value"`
+
+	//DefaultValueString holds a Structure default value in its serialized form, because a
+	//document database cannot store every json object as a document field. It is never part
+	//of the api representation; the owning repository fills it on write and clears it on read.
+	DefaultValueString *string `json:"-"`
 }
 
 type Import struct {
