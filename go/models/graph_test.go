@@ -1256,3 +1256,30 @@ func normalize[T any](e T) (r T) {
 }
 
 //TODO: exactly one node with only input edges and no output edges
+
+func TestGraphThingNodes(t *testing.T) {
+	graph := func(endType, otherType string) Graph {
+		return Graph{
+			Id:    "a",
+			Owner: "test",
+			Nodes: []Node{
+				{Id: "end", ResourceType: endType, ResourceId: "r-end"},
+				{Id: "other", ResourceType: otherType, ResourceId: "r-other"},
+			},
+			Edges: []Edge{{Id: "other->end", FromNodeId: "other", ToNodeId: "end", Weight: 100}},
+		}
+	}
+	t.Run("thing as end node is rejected", func(t *testing.T) {
+		g := graph(GraphResourceTypeThing, "test")
+		err := g.Valid()
+		if err == nil || !strings.Contains(err.Error(), "end node may not have the resource_type 'thing'") {
+			t.Errorf("unexpected error: %v", err)
+		}
+	})
+	t.Run("thing as non-end node is accepted", func(t *testing.T) {
+		g := graph("test", GraphResourceTypeThing)
+		if err := g.Valid(); err != nil {
+			t.Error(err)
+		}
+	})
+}

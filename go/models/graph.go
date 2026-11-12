@@ -27,6 +27,7 @@ import (
 const GraphEdgeAttrSystemChanged = "system_changed"
 
 const GraphResourceTypeDevice GraphResourceType = "device"
+const GraphResourceTypeThing GraphResourceType = "thing"
 
 var ErrGraphLoop = fmt.Errorf("graph contains cycle/loop")
 
@@ -147,6 +148,9 @@ func (this *Graph) Valid() error {
 
 	if endNodes[0].ResourceType == GraphResourceTypeDevice {
 		return fmt.Errorf("the end node may not have the resource_type '%v'", GraphResourceTypeDevice)
+	}
+	if endNodes[0].ResourceType == GraphResourceTypeThing {
+		return fmt.Errorf("the end node may not have the resource_type '%v'", GraphResourceTypeThing)
 	}
 
 	for nodeId, sum := range outgoingWeightSums {

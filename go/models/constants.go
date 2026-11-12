@@ -72,6 +72,7 @@ const (
 	CONTENT_VARIABLE_PREFIX     = URN_PREFIX + "content-variable:"
 	HUB_PREFIX                  = URN_PREFIX + "hub:"
 	DEVICE_PREFIX               = URN_PREFIX + "device:"
+	THING_PREFIX                = URN_PREFIX + "thing:"
 	DEVICE_GROUP_PREFIX         = URN_PREFIX + "device-group:"
 	LOCATION_PREFIX             = URN_PREFIX + "location:"
 )

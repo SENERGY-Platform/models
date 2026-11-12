@@ -151,3 +151,13 @@ func (this *Graph) GenerateId() {
 		this.Id = URN_PREFIX + "graph:" + uuid.New().String()
 	}
 }
+
+func (this *Thing) GenerateId() {
+	if this.Id == "" {
+		this.Id = THING_PREFIX + uuid.New().String()
+	}
+	for i, v := range this.ContentVariables {
+		v.GenerateId()
+		this.ContentVariables[i] = v
+	}
+}
