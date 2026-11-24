@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -43,19 +44,29 @@ type Graph struct {
 	Owner      string      `json:"owner"`
 }
 
+// Node is valid during [ValidFrom, ValidUntil), nil means unbounded on that side.
+// A node is identified by its Id, which is unique over the whole document, so a node has exactly one validity.
+// ResourceType and ResourceId never change; a different resource is a different node.
 type Node struct {
 	Id           string            `json:"id"`
 	Attributes   []Attribute       `json:"attributes"`
 	ResourceType GraphResourceType `json:"resource_type"`
 	ResourceId   string            `json:"resource_id"`
+	ValidFrom    *time.Time        `json:"valid_from,omitempty" bson:",omitempty"`
+	ValidUntil   *time.Time        `json:"valid_until,omitempty" bson:",omitempty"`
 }
 
+// Edge is valid during [ValidFrom, ValidUntil), nil means unbounded on that side.
+// An edge is identified by (FromNodeId, ToNodeId); the versions of one identity are separate edges with their own Id
+// and do not overlap in time. Ids are unique over the whole document.
 type Edge struct {
 	Id         string      `json:"id"`
 	FromNodeId string      `json:"from_node_id"`
 	ToNodeId   string      `json:"to_node_id"`
 	Weight     int         `json:"weight"`
 	Attributes []Attribute `json:"attributes"`
+	ValidFrom  *time.Time  `json:"valid_from,omitempty" bson:",omitempty"`
+	ValidUntil *time.Time  `json:"valid_until,omitempty" bson:",omitempty"`
 }
 
 type GraphResourceType = string
@@ -64,7 +75,9 @@ func (this *Graph) createId() string {
 	return GraphIdProvider()
 }
 
-func (this *Graph) Valid() error {
+// validProjection validates a graph without versions: every element is taken as valid.
+// Valid applies it to the projection of each segment of a graph with validities.
+func (this *Graph) validProjection() error {
 	nodeIds := map[string]bool{}
 	resourceIds := map[string]bool{}
 	outgoingWeightSums := map[string]int{}
@@ -200,6 +213,8 @@ func (this *Graph) ContainsLoop() bool {
 	return false
 }
 
+// DeleteNode removes a node and reroutes its edges. It works on a graph without versions
+// (a projection); on a stored document with validities it treats every version as live.
 func (this *Graph) DeleteNode(nodeId string) {
 	this.Nodes = slices.DeleteFunc(this.Nodes, func(node Node) bool {
 		return node.Id == nodeId
@@ -283,7 +298,7 @@ func (this *Graph) ensureValidEdgeWeights() {
 					if attrIndex == -1 {
 						edge.Attributes = append(edge.Attributes, Attribute{Key: GraphEdgeAttrSystemChanged, Value: "true"})
 					} else {
-						edge.Attributes[i].Value = "true"
+						edge.Attributes[attrIndex].Value = "true"
 					}
 					this.Edges[i] = edge
 					break

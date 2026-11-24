@@ -16,8 +16,16 @@
 
 package models
 
+import "time"
+
 type Attribute struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Origin string `json:"origin"`
+
+	// ValidFrom and ValidUntil are only interpreted on the attributes of a graph, its nodes and its edges.
+	// They bound the attribute to [ValidFrom, ValidUntil), nil means unbounded on that side.
+	// Every other owner of attributes (devices, device types, things, ...) ignores them and does not write them.
+	ValidFrom  *time.Time `json:"valid_from,omitempty" bson:",omitempty"`
+	ValidUntil *time.Time `json:"valid_until,omitempty" bson:",omitempty"`
 }

@@ -119,6 +119,68 @@ func TestThingValid(t *testing.T) {
 	}
 }
 
+func fp(f float64) *float64 { return &f }
+
+func validMeter() Thing {
+	th := validThing()
+	th.Kind = ThingKindMeter
+	th.DeviceLinks[0].Factor = fp(40)
+	th.DeviceLinks[0].Readings = []ThingDeviceLinkReading{
+		{ServiceId: "s1", Column: "metrics.energy", FromValue: 10, UntilValue: fp(20)},
+		{ServiceId: "s1", Column: "metrics.energy_t2", FromValue: 1},
+		{ServiceId: "s2", Column: "metrics.energy", FromValue: 3},
+	}
+	return th
+}
+
+func TestThingValidMeter(t *testing.T) {
+	tests := []struct {
+		name    string
+		mod     func(*Thing)
+		wantErr string
+	}{
+		{"valid meter", func(th *Thing) {}, ""},
+		{"kind consumer", func(th *Thing) {
+			th.Kind = ThingKindConsumer
+			th.DeviceLinks[0].Readings = nil
+			th.DeviceLinks[0].Factor = nil
+		}, ""},
+		{"empty kind", func(th *Thing) { th.Kind = ""; th.DeviceLinks[0].Readings = nil; th.DeviceLinks[0].Factor = nil }, ""},
+		{"unknown kind", func(th *Thing) { th.Kind = "meters" }, "unknown thing kind"},
+		{"readings on empty kind", func(th *Thing) { th.Kind = ""; th.DeviceLinks[0].Factor = nil }, "only allowed"},
+		{"readings on consumer", func(th *Thing) { th.Kind = ThingKindConsumer; th.DeviceLinks[0].Factor = nil }, "only allowed"},
+		{"factor on consumer", func(th *Thing) { th.Kind = ThingKindConsumer; th.DeviceLinks[0].Readings = nil }, "only allowed"},
+		{"factor zero", func(th *Thing) { th.DeviceLinks[0].Factor = fp(0) }, "factor must be greater than 0"},
+		{"factor negative", func(th *Thing) { th.DeviceLinks[0].Factor = fp(-1) }, "factor must be greater than 0"},
+		{"factor nil", func(th *Thing) { th.DeviceLinks[0].Factor = nil }, ""},
+		{"missing service id", func(th *Thing) { th.DeviceLinks[0].Readings[0].ServiceId = "" }, "missing service_id"},
+		{"missing column", func(th *Thing) { th.DeviceLinks[0].Readings[0].Column = "" }, "missing column"},
+		{"duplicate reading", func(th *Thing) { th.DeviceLinks[0].Readings[1].Column = "metrics.energy" }, "duplicate reading"},
+		{"until value on open link", func(th *Thing) { th.DeviceLinks[0].Until = nil }, "needs until"},
+		{"from value without until", func(th *Thing) {
+			th.DeviceLinks[0].Until = nil
+			th.DeviceLinks[0].Readings[0].UntilValue = nil
+		}, ""},
+		{"meter without links", func(th *Thing) { th.DeviceLinks = nil }, ""},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			th := validMeter()
+			tc.mod(&th)
+			err := th.Valid()
+			if tc.wantErr == "" {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("want error containing %q, got %v", tc.wantErr, err)
+			}
+		})
+	}
+}
+
 func TestThingGenerateId(t *testing.T) {
 	t.Run("prefix", func(t *testing.T) {
 		th := Thing{}
